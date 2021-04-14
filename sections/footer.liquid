@@ -1,0 +1,88 @@
+<div class="page-footer">
+  {% if section.settings.show_signup %}
+    {% unless section.settings.hide_signup_home == true and template contains 'index' %}
+      <div class="signup-form padded-block background-tint form">
+        <div class="signup-form-container">
+          <h6 class="h1 title">{{ 'layout.signup.title' | t }}</h6>
+          <div class="message">{{ 'layout.signup.message' | t }}</div>
+          {% form 'customer' %}
+          {% if form.posted_successfully? %}
+          <p class="msg">{{ 'layout.signup.post_success' | t }}</p>
+          {% else %}
+          {% if form.errors %}
+          {% for field in form.errors %}
+          <p class="msg error">{{ field | capitalize }} - {{ form.errors.messages[field] }}</p>
+          {% endfor %}
+          {% endif %}
+          <div class="inline-input-button-row">
+            <div class="inline-input-button-row__input">
+              <input type="hidden" id="contact_tags" name="contact[tags]" value="prospect,newsletter"/>
+              <input type="email" class="text required" value="" name="contact[email]" placeholder="{{ 'layout.signup.placeholder' | t }}" />
+            </div>
+            <div class="inline-input-button-row__button">
+              <button type="submit">{{ 'layout.signup.submit' | t }}</button>
+            </div>
+          </div>
+          {% endif %}
+          {% endform %}
+        </div>
+      </div>
+    {% endunless %}
+  {% endif %}
+
+  <div class="page-footer__lower">
+    <div class="page-footer__row">
+      {% if linklists[section.settings.menu_linklist].links.size > 0 %}
+      <ul class="nav">
+        {% for link in linklists[section.settings.menu_linklist].links %}
+        <li>{{ link.title | link_to: link.url }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+      {% include 'social-icons' %}
+    </div>
+
+    <div class="page-footer__row">
+      <div class="copy">
+        &copy; {{ "now" | date: "%Y" }} {{ shop.name | link_to: '/' }}
+
+      </div>
+      <span class="payment-methods">
+        {% for type in shop.enabled_payment_types %}
+        <img src="{{ type | payment_type_img_url }}" alt="{{ type | escape }}" />
+        {% endfor %}
+      </span>
+    </div>
+  </div>
+</div>
+
+
+{% schema %}
+  {
+    "name": "Footer",
+    "settings": [
+      {
+        "type": "link_list",
+        "id": "menu_linklist",
+        "label": "Menu",
+		    "default": "footer",
+		    "info": "This menu won't show dropdown items"
+      },
+      {
+        "type": "header",
+        "content": "Newsletter signup"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_signup",
+        "label": "Show newsletter signup"
+      },
+      {
+        "type": "checkbox",
+        "id": "hide_signup_home",
+        "label": "Exclude from home page",
+        "default": false
+      }
+    ]
+  }
+{% endschema %}
